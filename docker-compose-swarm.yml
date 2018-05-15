@@ -1,0 +1,85 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.6
+    restart: on-failure
+    ports:
+      - 3306:3306
+    volumes:
+      - microservice-mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: microservice_mallmanagement
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+
+  eureka-server:
+    image: 192.168.197.143:5000/microservice-eureka-server:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - 8761:8761
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  gateway-zuul:
+    image: 192.168.197.143:5000/microservice-gateway-zuul:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - 8050:8050
+    depends_on:
+      - eureka-server
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+
+  order-service:
+    image: 192.168.197.143:5000/microservice-orderservice:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - 7900:7900
+    depends_on:
+      - mysql
+      - eureka-server
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  user-service:
+    image: 192.168.197.143:5000/microservice-userservice:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - 8030:8030
+    depends_on:
+      - mysql
+      - eureka-server
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - 8081:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  default:
+    external:
+      name: microservice_net
+volumes:
+  microservice-mysql:
