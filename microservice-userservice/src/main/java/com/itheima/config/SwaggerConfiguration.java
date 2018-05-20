@@ -24,8 +24,8 @@ public class SwaggerConfiguration {
       StopWatch watch = new StopWatch();
       watch.start();
       //用于生成对应API接口文档的描述信息，可省略
-      ApiInfo apiInfo = new ApiInfo("用户管理API接口测试文档","description",
-        		"termsOfServiceUrl","contact","version","","");
+      ApiInfo apiInfo = new ApiInfo("用户管理API接口测试文档","microservice-userservice",
+        		"1.0","terms of Service Url","Rickie","","");
       Docket docket = new Docket(DocumentationType.SWAGGER_2)
         .apiInfo(apiInfo)
         .genericModelSubstitutes(ResponseEntity.class)
