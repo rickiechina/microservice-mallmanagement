@@ -2,10 +2,11 @@ spring:
   application:
     name: gateway-zuul # 指定应用名称
 
-#  cloud:
-#    inetutils:
-#      preferred-networks:
-#      - 10.0   # 设置注册到Eureka中心的优选服务地址
+# docker-compose swarm
+  cloud:
+    inetutils:
+      preferred-networks:
+      - 10.0   # 设置注册到Eureka中心的优选服务地址
 
 server:
   port: 8050
@@ -13,7 +14,7 @@ server:
 eureka:
   instance:
       prefer-ip-address: true  #优选通过IP地址找到对应的服务名称
-
+      instance-id: ${spring.application.name}:${spring.application.instance_id}:${random.value}
   client:
     #配置eureka注册中心地址
     serviceUrl:
